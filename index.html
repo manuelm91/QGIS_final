@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/modern_cinemas_cleaned_2.js"></script>
+        <script src="data/historical_cinemas_cleaned_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[48.132360420152445,16.20026747913985],[48.26936770150957,16.507804656522637]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleMaps_0');
+        map.getPane('pane_GoogleMaps_0').style.zIndex = 400;
+        var layer_GoogleMaps_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleMaps_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+        });
+        layer_GoogleMaps_0;
+        map.addLayer(layer_GoogleMaps_0);
+        map.createPane('pane_EsriLightGray_1');
+        map.getPane('pane_EsriLightGray_1').style.zIndex = 401;
+        var layer_EsriLightGray_1 = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_EsriLightGray_1',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+        });
+        layer_EsriLightGray_1;
+        map.addLayer(layer_EsriLightGray_1);
+        function pop_modern_cinemas_cleaned_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>name</strong><br />' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">District</th>\
+                        <td>' + (feature.properties['District'] !== null ? autolinker.link(feature.properties['District'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Opening.Year</th>\
+                        <td>' + (feature.properties['Opening.Year'] !== null ? autolinker.link(feature.properties['Opening.Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Closing.Year</th>\
+                        <td>' + (feature.properties['Closing.Year'] !== null ? autolinker.link(feature.properties['Closing.Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ownership</th>\
+                        <td>' + (feature.properties['Ownership'] !== null ? autolinker.link(feature.properties['Ownership'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Status</th>\
+                        <td>' + (feature.properties['Status'] !== null ? autolinker.link(feature.properties['Status'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_modern_cinemas_cleaned_2_0() {
+            return {
+                pane: 'pane_modern_cinemas_cleaned_2',
+                radius: 6.800000000000001,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(79,58,182,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_modern_cinemas_cleaned_2');
+        map.getPane('pane_modern_cinemas_cleaned_2').style.zIndex = 402;
+        map.getPane('pane_modern_cinemas_cleaned_2').style['mix-blend-mode'] = 'normal';
+        var layer_modern_cinemas_cleaned_2 = new L.geoJson(json_modern_cinemas_cleaned_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_modern_cinemas_cleaned_2',
+            layerName: 'layer_modern_cinemas_cleaned_2',
+            pane: 'pane_modern_cinemas_cleaned_2',
+            onEachFeature: pop_modern_cinemas_cleaned_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_modern_cinemas_cleaned_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_modern_cinemas_cleaned_2);
+        map.addLayer(layer_modern_cinemas_cleaned_2);
+        function pop_historical_cinemas_cleaned_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>name</strong><br />' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">District</th>\
+                        <td>' + (feature.properties['District'] !== null ? autolinker.link(feature.properties['District'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Type</th>\
+                        <td>' + (feature.properties['Type'] !== null ? autolinker.link(feature.properties['Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Opening.Year</th>\
+                        <td>' + (feature.properties['Opening.Year'] !== null ? autolinker.link(feature.properties['Opening.Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Closing.Year</th>\
+                        <td>' + (feature.properties['Closing.Year'] !== null ? autolinker.link(feature.properties['Closing.Year'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ownership_beforeWWII</th>\
+                        <td>' + (feature.properties['Ownership_beforeWWII'] !== null ? autolinker.link(feature.properties['Ownership_beforeWWII'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Ownership_afterWWII</th>\
+                        <td>' + (feature.properties['Ownership_afterWWII'] !== null ? autolinker.link(feature.properties['Ownership_afterWWII'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Present_ownership</th>\
+                        <td>' + (feature.properties['Present_ownership'] !== null ? autolinker.link(feature.properties['Present_ownership'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Aryanization</th>\
+                        <td>' + (feature.properties['Aryanization'] !== null ? autolinker.link(feature.properties['Aryanization'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Status</th>\
+                        <td>' + (feature.properties['Status'] !== null ? autolinker.link(feature.properties['Status'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_historical_cinemas_cleaned_3_0() {
+            return {
+                pane: 'pane_historical_cinemas_cleaned_3',
+                radius: 6.800000000000001,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(150,110,15,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_historical_cinemas_cleaned_3');
+        map.getPane('pane_historical_cinemas_cleaned_3').style.zIndex = 403;
+        map.getPane('pane_historical_cinemas_cleaned_3').style['mix-blend-mode'] = 'normal';
+        var layer_historical_cinemas_cleaned_3 = new L.geoJson(json_historical_cinemas_cleaned_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_historical_cinemas_cleaned_3',
+            layerName: 'layer_historical_cinemas_cleaned_3',
+            pane: 'pane_historical_cinemas_cleaned_3',
+            onEachFeature: pop_historical_cinemas_cleaned_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_historical_cinemas_cleaned_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_historical_cinemas_cleaned_3);
+        map.addLayer(layer_historical_cinemas_cleaned_3);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/historical_cinemas_cleaned_3.png" /> historical_cinemas_cleaned': layer_historical_cinemas_cleaned_3,'<img src="legend/modern_cinemas_cleaned_2.png" /> modern_cinemas_cleaned': layer_modern_cinemas_cleaned_2,"Esri Light Gray": layer_EsriLightGray_1,"Google Maps": layer_GoogleMaps_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_historical_cinemas_cleaned_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Aryanization": "str","Type": "str","Ownership_beforeWWII": "str","Status": "str","District": "str","Ownership_afterWWII": "str","Present_ownership": "str","Ownership": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Aryanization = document.createElement('div');
+            div_Aryanization.id = "div_Aryanization";
+            div_Aryanization.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Aryanization);
+            sel_Aryanization = document.createElement('select');
+            sel_Aryanization.multiple = true;
+            sel_Aryanization.size = 3;
+            sel_Aryanization.id = "sel_Aryanization";
+            var Aryanization_options_str = "<option value='' unselected></option>";
+            sel_Aryanization.onchange = function(){filterFunc()};
+            Aryanization_options_str  += '<option value="Aryanized">Aryanized</option>';
+            Aryanization_options_str  += '<option value="Not Aryanized">Not Aryanized</option>';
+            Aryanization_options_str  += '<option value="Not Aryanized">Not Aryanized</option>';
+            sel_Aryanization.innerHTML = Aryanization_options_str;
+            div_Aryanization.appendChild(sel_Aryanization);
+            var lab_Aryanization = document.createElement('div');
+            lab_Aryanization.innerHTML = 'Aryanization';
+            lab_Aryanization.className = 'filterlabel';
+            div_Aryanization.appendChild(lab_Aryanization);
+            var reset_Aryanization = document.createElement('div');
+            reset_Aryanization.innerHTML = 'clear filter';
+            reset_Aryanization.className = 'filterlabel';
+            reset_Aryanization.onclick = function() {
+                var options = document.getElementById("sel_Aryanization").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Aryanization.appendChild(reset_Aryanization);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Type = document.createElement('div');
+            div_Type.id = "div_Type";
+            div_Type.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Type);
+            sel_Type = document.createElement('select');
+            sel_Type.multiple = true;
+            sel_Type.size = 6;
+            sel_Type.id = "sel_Type";
+            var Type_options_str = "<option value='' unselected></option>";
+            sel_Type.onchange = function(){filterFunc()};
+            Type_options_str  += '<option value="Arthouse">Arthouse</option>';
+            Type_options_str  += '<option value="Film Archive">Film Archive</option>';
+            Type_options_str  += '<option value="Megaplex">Megaplex</option>';
+            Type_options_str  += '<option value="Multiplex">Multiplex</option>';
+            Type_options_str  += '<option value="SIngle-screen">SIngle-screen</option>';
+            Type_options_str  += '<option value="Single-screen">Single-screen</option>';
+            sel_Type.innerHTML = Type_options_str;
+            div_Type.appendChild(sel_Type);
+            var lab_Type = document.createElement('div');
+            lab_Type.innerHTML = 'Type';
+            lab_Type.className = 'filterlabel';
+            div_Type.appendChild(lab_Type);
+            var reset_Type = document.createElement('div');
+            reset_Type.innerHTML = 'clear filter';
+            reset_Type.className = 'filterlabel';
+            reset_Type.onclick = function() {
+                var options = document.getElementById("sel_Type").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Type.appendChild(reset_Type);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Ownership_beforeWWII = document.createElement('div');
+            div_Ownership_beforeWWII.id = "div_Ownership_beforeWWII";
+            div_Ownership_beforeWWII.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Ownership_beforeWWII);
+            sel_Ownership_beforeWWII = document.createElement('select');
+            sel_Ownership_beforeWWII.multiple = true;
+            sel_Ownership_beforeWWII.size = 10;
+            sel_Ownership_beforeWWII.id = "sel_Ownership_beforeWWII";
+            var Ownership_beforeWWII_options_str = "<option value='' unselected></option>";
+            sel_Ownership_beforeWWII.onchange = function(){filterFunc()};
+            Ownership_beforeWWII_options_str  += '<option value=""></option>';
+            Ownership_beforeWWII_options_str  += '<option value="Alfred Schweiger ">Alfred Schweiger </option>';
+            Ownership_beforeWWII_options_str  += '<option value="Arbeiterheim Floridsdorf">Arbeiterheim Floridsdorf</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Arthur und Margarete Koch">Arthur und Margarete Koch</option>';
+            Ownership_beforeWWII_options_str  += '<option value="August Triebel">August Triebel</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Auguste Schaaf">Auguste Schaaf</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Bela Honig">Bela Honig</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Bruno Stoessler">Bruno Stoessler</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Carl Witzmann">Carl Witzmann</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Ebner Family">Ebner Family</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Egon Hellin">Egon Hellin</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Familie Poppenwimmer">Familie Poppenwimmer</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Franz Vales">Franz Vales</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Frau Fix">Frau Fix</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Friedrich Wacek">Friedrich Wacek</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Gustav Karpfen und Antoinetta Drucker">Gustav Karpfen und Antoinetta Drucker</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Herbert Albrecht">Herbert Albrecht</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Hugo Klein">Hugo Klein</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Johann Holzer">Johann Holzer</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Johanna Hermann">Johanna Hermann</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Josef Jarno">Josef Jarno</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Josefine Krauschner">Josefine Krauschner</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Kamillo Rhoden und Karl Singer">Kamillo Rhoden und Karl Singer</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Kolb family ">Kolb family </option>';
+            Ownership_beforeWWII_options_str  += '<option value="Käthe Kerpner">Käthe Kerpner</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Lambert Schmidt">Lambert Schmidt</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Leon Epp">Leon Epp</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Leopold und Rosa Mößlinger">Leopold und Rosa Mößlinger</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Mathilde Weiss">Mathilde Weiss</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Moritz Watzeg ">Moritz Watzeg </option>';
+            Ownership_beforeWWII_options_str  += '<option value="Oskar Glück">Oskar Glück</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Sascha-Film">Sascha-Film</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Selma Haas">Selma Haas</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Stefan Fayans">Stefan Fayans</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Theresia Klein">Theresia Klein</option>';
+            Ownership_beforeWWII_options_str  += '<option value="Viktor Eckhardt">Viktor Eckhardt</option>';
+            Ownership_beforeWWII_options_str  += '<option value="k.u.k.Gartenbaugesellschaft">k.u.k.Gartenbaugesellschaft</option>';
+            Ownership_beforeWWII_options_str  += '<option value="unknown">unknown</option>';
+            sel_Ownership_beforeWWII.innerHTML = Ownership_beforeWWII_options_str;
+            div_Ownership_beforeWWII.appendChild(sel_Ownership_beforeWWII);
+            var lab_Ownership_beforeWWII = document.createElement('div');
+            lab_Ownership_beforeWWII.innerHTML = 'Ownership_beforeWWII';
+            lab_Ownership_beforeWWII.className = 'filterlabel';
+            div_Ownership_beforeWWII.appendChild(lab_Ownership_beforeWWII);
+            var reset_Ownership_beforeWWII = document.createElement('div');
+            reset_Ownership_beforeWWII.innerHTML = 'clear filter';
+            reset_Ownership_beforeWWII.className = 'filterlabel';
+            reset_Ownership_beforeWWII.onclick = function() {
+                var options = document.getElementById("sel_Ownership_beforeWWII").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Ownership_beforeWWII.appendChild(reset_Ownership_beforeWWII);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Status = document.createElement('div');
+            div_Status.id = "div_Status";
+            div_Status.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Status);
+            sel_Status = document.createElement('select');
+            sel_Status.multiple = true;
+            sel_Status.size = 4;
+            sel_Status.id = "sel_Status";
+            var Status_options_str = "<option value='' unselected></option>";
+            sel_Status.onchange = function(){filterFunc()};
+            Status_options_str  += '<option value="Bombed">Bombed</option>';
+            Status_options_str  += '<option value="Closed">Closed</option>';
+            Status_options_str  += '<option value="Open">Open</option>';
+            Status_options_str  += '<option value="Still Open">Still Open</option>';
+            sel_Status.innerHTML = Status_options_str;
+            div_Status.appendChild(sel_Status);
+            var lab_Status = document.createElement('div');
+            lab_Status.innerHTML = 'Status';
+            lab_Status.className = 'filterlabel';
+            div_Status.appendChild(lab_Status);
+            var reset_Status = document.createElement('div');
+            reset_Status.innerHTML = 'clear filter';
+            reset_Status.className = 'filterlabel';
+            reset_Status.onclick = function() {
+                var options = document.getElementById("sel_Status").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Status.appendChild(reset_Status);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_District = document.createElement('div');
+            div_District.id = "div_District";
+            div_District.className= "filterselect";
+            document.getElementById("menu").appendChild(div_District);
+            sel_District = document.createElement('select');
+            sel_District.multiple = true;
+            sel_District.size = 10;
+            sel_District.id = "sel_District";
+            var District_options_str = "<option value='' unselected></option>";
+            sel_District.onchange = function(){filterFunc()};
+            District_options_str  += '<option value="1">1</option>';
+            District_options_str  += '<option value="10">10</option>';
+            District_options_str  += '<option value="11">11</option>';
+            District_options_str  += '<option value="14">14</option>';
+            District_options_str  += '<option value="15">15</option>';
+            District_options_str  += '<option value="16">16</option>';
+            District_options_str  += '<option value="17">17</option>';
+            District_options_str  += '<option value="18">18</option>';
+            District_options_str  += '<option value="19">19</option>';
+            District_options_str  += '<option value="2">2</option>';
+            District_options_str  += '<option value="21">21</option>';
+            District_options_str  += '<option value="22">22</option>';
+            District_options_str  += '<option value="23">23</option>';
+            District_options_str  += '<option value="3">3</option>';
+            District_options_str  += '<option value="4">4</option>';
+            District_options_str  += '<option value="5">5</option>';
+            District_options_str  += '<option value="6">6</option>';
+            District_options_str  += '<option value="7">7</option>';
+            District_options_str  += '<option value="8">8</option>';
+            District_options_str  += '<option value="9">9</option>';
+            sel_District.innerHTML = District_options_str;
+            div_District.appendChild(sel_District);
+            var lab_District = document.createElement('div');
+            lab_District.innerHTML = 'District';
+            lab_District.className = 'filterlabel';
+            div_District.appendChild(lab_District);
+            var reset_District = document.createElement('div');
+            reset_District.innerHTML = 'clear filter';
+            reset_District.className = 'filterlabel';
+            reset_District.onclick = function() {
+                var options = document.getElementById("sel_District").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_District.appendChild(reset_District);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Ownership_afterWWII = document.createElement('div');
+            div_Ownership_afterWWII.id = "div_Ownership_afterWWII";
+            div_Ownership_afterWWII.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Ownership_afterWWII);
+            sel_Ownership_afterWWII = document.createElement('select');
+            sel_Ownership_afterWWII.multiple = true;
+            sel_Ownership_afterWWII.size = 10;
+            sel_Ownership_afterWWII.id = "sel_Ownership_afterWWII";
+            var Ownership_afterWWII_options_str = "<option value='' unselected></option>";
+            sel_Ownership_afterWWII.onchange = function(){filterFunc()};
+            Ownership_afterWWII_options_str  += '<option value=""></option>';
+            Ownership_afterWWII_options_str  += '<option value="Adolf Lichtenberger ">Adolf Lichtenberger </option>';
+            Ownership_afterWWII_options_str  += '<option value="Alfred Migsch">Alfred Migsch</option>';
+            Ownership_afterWWII_options_str  += '<option value="Babette Alfrey">Babette Alfrey</option>';
+            Ownership_afterWWII_options_str  += '<option value="Familie Poppenwimmer">Familie Poppenwimmer</option>';
+            Ownership_afterWWII_options_str  += '<option value="Grete Mandl-Pfosser">Grete Mandl-Pfosser</option>';
+            Ownership_afterWWII_options_str  += '<option value="Helene Bock ">Helene Bock </option>';
+            Ownership_afterWWII_options_str  += '<option value="Herbert und Elisabeth Huber">Herbert und Elisabeth Huber</option>';
+            Ownership_afterWWII_options_str  += '<option value="Johanna Hermann">Johanna Hermann</option>';
+            Ownership_afterWWII_options_str  += '<option value="Karl Tögl">Karl Tögl</option>';
+            Ownership_afterWWII_options_str  += '<option value="Kiba">Kiba</option>';
+            Ownership_afterWWII_options_str  += '<option value="Leopold Langhammer">Leopold Langhammer</option>';
+            Ownership_afterWWII_options_str  += '<option value="Luise Reinhold.">Luise Reinhold.</option>';
+            Ownership_afterWWII_options_str  += '<option value="Maria Korn">Maria Korn</option>';
+            Ownership_afterWWII_options_str  += '<option value="Mathilde Weiss">Mathilde Weiss</option>';
+            Ownership_afterWWII_options_str  += '<option value="Otto Zeisel">Otto Zeisel</option>';
+            Ownership_afterWWII_options_str  += '<option value="Rudolf Ambros">Rudolf Ambros</option>';
+            Ownership_afterWWII_options_str  += '<option value="Unknown">Unknown</option>';
+            Ownership_afterWWII_options_str  += '<option value="Wilhelm Pischan">Wilhelm Pischan</option>';
+            Ownership_afterWWII_options_str  += '<option value="unknown">unknown</option>';
+            sel_Ownership_afterWWII.innerHTML = Ownership_afterWWII_options_str;
+            div_Ownership_afterWWII.appendChild(sel_Ownership_afterWWII);
+            var lab_Ownership_afterWWII = document.createElement('div');
+            lab_Ownership_afterWWII.innerHTML = 'Ownership_afterWWII';
+            lab_Ownership_afterWWII.className = 'filterlabel';
+            div_Ownership_afterWWII.appendChild(lab_Ownership_afterWWII);
+            var reset_Ownership_afterWWII = document.createElement('div');
+            reset_Ownership_afterWWII.innerHTML = 'clear filter';
+            reset_Ownership_afterWWII.className = 'filterlabel';
+            reset_Ownership_afterWWII.onclick = function() {
+                var options = document.getElementById("sel_Ownership_afterWWII").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Ownership_afterWWII.appendChild(reset_Ownership_afterWWII);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Present_ownership = document.createElement('div');
+            div_Present_ownership.id = "div_Present_ownership";
+            div_Present_ownership.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Present_ownership);
+            sel_Present_ownership = document.createElement('select');
+            sel_Present_ownership.multiple = true;
+            sel_Present_ownership.size = 10;
+            sel_Present_ownership.id = "sel_Present_ownership";
+            var Present_ownership_options_str = "<option value='' unselected></option>";
+            sel_Present_ownership.onchange = function(){filterFunc()};
+            Present_ownership_options_str  += '<option value=""></option>';
+            Present_ownership_options_str  += '<option value="Cineplexx">Cineplexx</option>';
+            Present_ownership_options_str  += '<option value="City Cinemas Lichtspieltheater GmbH">City Cinemas Lichtspieltheater GmbH</option>';
+            Present_ownership_options_str  += '<option value="ENTUZIASM Kinobetriebs GesmbH">ENTUZIASM Kinobetriebs GesmbH</option>';
+            Present_ownership_options_str  += '<option value="Filmarchiv Austria">Filmarchiv Austria</option>';
+            Present_ownership_options_str  += '<option value="Filmladen">Filmladen</option>';
+            Present_ownership_options_str  += '<option value="Kurt Schramek">Kurt Schramek</option>';
+            Present_ownership_options_str  += '<option value="Otto Honig">Otto Honig</option>';
+            Present_ownership_options_str  += '<option value="Votiv Kino">Votiv Kino</option>';
+            Present_ownership_options_str  += '<option value="none">none</option>';
+            Present_ownership_options_str  += '<option value="polyfilm">polyfilm</option>';
+            sel_Present_ownership.innerHTML = Present_ownership_options_str;
+            div_Present_ownership.appendChild(sel_Present_ownership);
+            var lab_Present_ownership = document.createElement('div');
+            lab_Present_ownership.innerHTML = 'Present_ownership';
+            lab_Present_ownership.className = 'filterlabel';
+            div_Present_ownership.appendChild(lab_Present_ownership);
+            var reset_Present_ownership = document.createElement('div');
+            reset_Present_ownership.innerHTML = 'clear filter';
+            reset_Present_ownership.className = 'filterlabel';
+            reset_Present_ownership.onclick = function() {
+                var options = document.getElementById("sel_Present_ownership").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Present_ownership.appendChild(reset_Present_ownership);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Ownership = document.createElement('div');
+            div_Ownership.id = "div_Ownership";
+            div_Ownership.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Ownership);
+            sel_Ownership = document.createElement('select');
+            sel_Ownership.multiple = true;
+            sel_Ownership.size = 10;
+            sel_Ownership.id = "sel_Ownership";
+            var Ownership_options_str = "<option value='' unselected></option>";
+            sel_Ownership.onchange = function(){filterFunc()};
+            Ownership_options_str  += '<option value="ADF-Kinobetriebsges.">ADF-Kinobetriebsges.</option>';
+            Ownership_options_str  += '<option value="Alexander Horwat">Alexander Horwat</option>';
+            Ownership_options_str  += '<option value="CIneplexx">CIneplexx</option>';
+            Ownership_options_str  += '<option value="Cineplexx">Cineplexx</option>';
+            Ownership_options_str  += '<option value="Emil Richter-Roland ">Emil Richter-Roland </option>';
+            Ownership_options_str  += '<option value="Gerald Pichowetz">Gerald Pichowetz</option>';
+            Ownership_options_str  += '<option value="Ingrid Hueber">Ingrid Hueber</option>';
+            Ownership_options_str  += '<option value="Jacqueline Lugner">Jacqueline Lugner</option>';
+            Ownership_options_str  += '<option value="Kiba">Kiba</option>';
+            Ownership_options_str  += '<option value="Rath and Co">Rath and Co</option>';
+            Ownership_options_str  += '<option value="Robert Kotas">Robert Kotas</option>';
+            Ownership_options_str  += '<option value="unknown">unknown</option>';
+            sel_Ownership.innerHTML = Ownership_options_str;
+            div_Ownership.appendChild(sel_Ownership);
+            var lab_Ownership = document.createElement('div');
+            lab_Ownership.innerHTML = 'Ownership';
+            lab_Ownership.className = 'filterlabel';
+            div_Ownership.appendChild(lab_Ownership);
+            var reset_Ownership = document.createElement('div');
+            reset_Ownership.innerHTML = 'clear filter';
+            reset_Ownership.className = 'filterlabel';
+            reset_Ownership.onclick = function() {
+                var options = document.getElementById("sel_Ownership").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Ownership.appendChild(reset_Ownership);
+        </script>
+    </body>
+</html>
